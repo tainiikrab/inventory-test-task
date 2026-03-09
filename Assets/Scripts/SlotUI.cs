@@ -4,44 +4,48 @@ using UnityEngine.UI;
 
 public class SlotUI : MonoBehaviour
 {
-    public Image icon;
-    public TextMeshProUGUI countText;
-    public Button button;
-    private int index;
-    private InventoryUI parentUI;
-    private InventorySlot slot;
+    [SerializeField] private Image _icon;
+    [SerializeField] private TextMeshProUGUI _countText;
+    [SerializeField] private Button _button;
+
+    private int _index;
+    private InventoryUI _parentUI;
+    private InventorySlot _slot;
 
     private void Start()
     {
-        if (button != null) button.onClick.AddListener(OnClick);
+        if (_button != null) _button.onClick.AddListener(OnClick);
     }
 
     public void SetData(InventorySlot s, int idx, InventoryUI ui)
     {
-        slot = s;
-        index = idx;
-        parentUI = ui;
+        _slot = s;
+        _index = idx;
+        _parentUI = ui;
+
         if (s.IsEmpty)
         {
-            icon.enabled = false;
-            countText.text = "";
+            _icon.enabled = false;
+            _countText.text = "";
         }
         else
         {
-            icon.enabled = true;
-            icon.sprite = s.item.icon;
-            countText.text = s.item.stackable ? s.count.ToString() : "";
+            _icon.enabled = true;
+            _icon.sprite = s.Item.Icon;
+            _countText.text = s.Item.Stackable ? s.Count.ToString() : "";
         }
+    }
+
+    public void Clear()
+    {
+        _icon.enabled = false;
+        _countText.text = "";
+        _slot = null;
     }
 
     private void OnClick()
     {
-        if (slot == null || slot.IsEmpty) return;
-        parentUI.RequestRemoveFromSlot(index);
-    }
-
-    public void SetVisible(bool v)
-    {
-        gameObject.SetActive(v);
+        if (_slot == null || _slot.IsEmpty) return;
+        _parentUI.RequestRemoveFromSlot(_index);
     }
 }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cabd74bae18045278cb64af01f7e6390, type: 3}
   m_Name: Potion
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  itemName: Potion
-  itemType: 1
-  maxStack: 3
-  stackable: 1
+  Icon: {fileID: 21300000, guid: 57398da5879fe7d479832ba4edcf94f0, type: 3}
+  ItemName: Potion
+  ItemType: 1
+  MaxStack: 3
+  Stackable: 1

@@ -1,22 +1,24 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class InventorySlot
 {
-    public ItemDefinition item;
-    public int count;
+    [field: SerializeField] public ItemSO Item { get; set; }
+
+    [field: SerializeField] public int Count { get; set; }
 
     public InventorySlot()
     {
-        item = null;
-        count = 0;
+        Item = null;
+        Count = 0;
     }
 
-    public bool IsEmpty => item == null;
+    public bool IsEmpty => Item == null;
 
     public void Clear()
     {
-        item = null;
-        count = 0;
+        Item = null;
+        Count = 0;
     }
 }

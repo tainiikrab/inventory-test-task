@@ -2,29 +2,28 @@
 
 public class Inventory : MonoBehaviour
 {
-    public int slotCount = 20;
-    public InventorySlot[] slots;
+    [field: SerializeField] public int SlotCount { get; private set; } = 20;
+    [field: SerializeField] public InventorySlot[] Slots { get; private set; }
 
     private void Awake()
     {
-        slots = new InventorySlot[slotCount];
-        for (var i = 0; i < slotCount; i++) slots[i] = new InventorySlot();
+        Slots = new InventorySlot[SlotCount];
+        for (var i = 0; i < SlotCount; i++) Slots[i] = new InventorySlot();
     }
 
-    public bool AddItem(ItemDefinition item, int amount = 1)
+    public bool TryAddItem(ItemSO item, int amount = 1)
     {
         if (item == null || amount <= 0) return false;
-        if (item.stackable)
+        if (item.Stackable)
         {
             var remaining = amount;
-            for (var i = 0; i < slots.Length && remaining > 0; i++)
+            for (var i = 0; i < Slots.Length && remaining > 0; i++)
             {
-                var s = slots[i];
-                if (!s.IsEmpty && s.item == item && s.count < item.maxStack)
+                var s = Slots[i];
+                if (!s.IsEmpty && s.Item == item && s.Count < item.MaxStack)
                 {
-                    var canAdd = Mathf.Min(item.maxStack - s.count,
-                        remaining);
-                    s.count += canAdd;
+                    var canAdd = Mathf.Min(item.MaxStack - s.Count, remaining);
+                    s.Count += canAdd;
                     remaining -= canAdd;
                 }
             }
@@ -34,13 +33,13 @@ public class Inventory : MonoBehaviour
                 var emptyIndex = FindEmptySlot();
                 if (emptyIndex == -1)
                 {
-                    Debug.Log("Inventory full, could not add all items");
+                    Debug.Log("Inventory full, can't add all items");
                     return false;
                 }
 
-                var toPlace = Mathf.Min(item.maxStack, remaining);
-                slots[emptyIndex].item = item;
-                slots[emptyIndex].count = toPlace;
+                var toPlace = Mathf.Min(item.MaxStack, remaining);
+                Slots[emptyIndex].Item = item;
+                Slots[emptyIndex].Count = toPlace;
                 remaining -= toPlace;
             }
 
@@ -50,37 +49,60 @@ public class Inventory : MonoBehaviour
         var free = FindEmptySlot();
         if (free == -1)
         {
-            Debug.Log("Inventory full, cannot add item");
+            Debug.Log("Inventory full, can't add item");
             return false;
         }
 
-        slots[free].item = item;
-        slots[free].count = 1;
+        Slots[free].Item = item;
+        Slots[free].Count = 1;
         return true;
     }
 
     private int FindEmptySlot()
     {
-        for (var i = 0; i < slots.Length; i++)
-            if (slots[i].IsEmpty)
-                return
-                    i;
+        for (var i = 0; i < Slots.Length; i++)
+            if (Slots[i].IsEmpty)
+                return i;
         return -1;
     }
 
     public bool RemoveFromSlot(int slotIndex, int amount = 1)
     {
-        if (slotIndex < 0 || slotIndex >= slots.Length) return false;
-        var s = slots[slotIndex];
+        if (slotIndex < 0 || slotIndex >= Slots.Length) return false;
+
+        var s = Slots[slotIndex];
         if (s.IsEmpty) return false;
-        if (s.item.stackable)
+
+        if (s.Item.Stackable)
         {
-            s.count -= amount;
-            if (s.count <= 0) s.Clear();
-            return true;
+            s.Count -= amount;
+            if (s.Count <= 0) s.Clear();
+        }
+        else
+        {
+            s.Clear();
         }
 
-        s.Clear();
+        CompactSlots();
         return true;
+    }
+
+    private void CompactSlots()
+    {
+        var target = 0;
+
+        for (var i = 0; i < Slots.Length; i++)
+        {
+            if (Slots[i].IsEmpty) continue;
+
+            if (i != target)
+            {
+                Slots[target].Item = Slots[i].Item;
+                Slots[target].Count = Slots[i].Count;
+                Slots[i].Clear();
+            }
+
+            target++;
+        }
     }
 }
